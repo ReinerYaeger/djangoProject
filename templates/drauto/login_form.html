@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'drauto/main.html' %}
+    <meta charset="UTF-8">
+    <title>Login Sign up</title>
+</head>
+<body>
+{% include 'drauto/navbar.html' %}
+
+    <form method="post" action={% url 'login_form' %} >
+{#        {% csrf_token %}#}
+
+
+        <input type="text" name="username" placeholder="Username"/>
+        <input type="password" name="password" placeholder="Password"/>
+{#        {{ form }}#}
+        <input type="submit" value="login">
+    </form>
+
+</body>
+</html>

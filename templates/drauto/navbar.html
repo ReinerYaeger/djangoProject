@@ -1,0 +1,22 @@
+
+    <header>
+            <a href="#" class="logo"><i class="ri-car-fill"></i><span>Logo</span></a>
+
+            <ul class="navbar">
+                <li><a href={% url 'index' %} class="active">HOME</a></li>
+                <li><a href="#">SERVICES</a></li>
+                <li><a href="#">VEHICLES</a></li>
+                <li><a href="#">CONTACT US</a></li>
+            </ul>
+
+            <div class="main">
+
+                {%  if request.user.is.authenticated %}
+                    <a href="{% url 'login_form' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
+                {% else  %}
+                <a href="{% url 'login_form' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
+                <li><a href="#" >Register</a></li>
+                <div class="bx bx-menu" id="menu-icon"></div>
+                {% endif %}
+            </div>
+    </header>

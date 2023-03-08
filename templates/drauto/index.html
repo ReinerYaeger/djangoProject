@@ -1,0 +1,74 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    {% include 'drauto/main.html' %}
+    <head>
+        <title>Home</title>
+    </head>
+
+    <body>
+        {% include 'drauto/navbar.html' %}
+
+        <div class="container">
+            <div class="cont-about">
+                <img src= {%  static 'images/png-car-collage-removebg-preview.png'%} alt="Car Collage">
+                <div class="desc">
+                    <h1>DR AUTO SHOP</h1>
+                    <h2>About Us</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Mauris vitae dui volutpat, placerat lectus in, consectetur lectus.
+                        Vivamus dictum ligula ut nulla semper, quis fringilla nisl pellentesque.
+                    </p>
+                    <button class="btn"><a>Contact Us</a></button>
+                </div>
+                <div class="side-bar"></div>
+            </div>
+            <!--<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#FFA826" fill-opacity="1" d="M0,128L40,138.7C80,149,160,171,240,181.3C320,192,400,192,480,160C560,128,640,64,720,80C800,96,880,192,960,229.3C1040,267,1120,245,1200,202.7C1280,160,1360,96,1400,64L1440,32L1440,0L1400,0C1360,0,1280,0,1200,0C1120,0,1040,0,960,0C880,0,800,0,720,0C640,0,560,0,480,0C400,0,320,0,240,0C160,0,80,0,40,0L0,0Z"></path></svg>
+            -->
+            <div class="services">
+                <h2>Our Services</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Mauris vitae dui volutpat, placerat lectus in, consectetur lectus.
+                    Vivamus dictum ligula ut nulla semper, quis fringilla nisl pellentesque.</p>
+                <div class="content-box">
+                    <div class="card">
+                        <i class="bx bxs-car-battery bx-md"></i>
+                        <h3>Parts Changed</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Mauris vitae dui volutpat, placerat lectus in, consectetur lectus.
+                            Vivamus dictum ligula ut nulla semper, quis fringilla nisl pellentesque.</p>
+                    </div>
+
+                    <div class="card">
+                        <i class="bx bxs-wrench bx-md"></i>
+                        <h3>Repairs</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Mauris vitae dui volutpat, placerat lectus in, consectetur lectus.
+                            Vivamus dictum ligula ut nulla semper, quis fringilla nisl pellentesque.</p>
+                    </div>
+
+                    <div class="card">
+                        <i class="bx bxs-car-mechanic bx-md"></i>
+                        <h3>Repairs</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Mauris vitae dui volutpat, placerat lectus in, consectetur lectus.
+                            Vivamus dictum ligula ut nulla semper, quis fringilla nisl pellentesque.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vehicles">
+                <h2>Vehicles for Sale!</h2>
+            </div>
+        </div>
+
+
+
+        <footer>
+
+        </footer>
+
+        <!-- js link-->
+        <script type="text/javascript" src={% static '/script/index.js' %}></script>
+    </body>
+</html>
