@@ -9,14 +9,29 @@
 
     <h1 > What we offer </h1>
 
+    {% for vehicle in vehicle_list %}
 
-        <div class="card">
+        <div class="services">
+                <div class="content-box">
+                    <div class="card">
+                        <i class="bx bxs-car-battery bx-md"></i>
+                        <h3>Parts Changed</h3>
+                        {% if request.user.is_authenticated %}
+                            <p> Purchase</p>
+                        {% else %}
+                            <p> Login to Purchase </p>
+                        {% endif %}
+                    </div>
+                </div>
+        </div>
+{% comment %}        <div class="card">
             <i class="bx bxs-wrench bx-md"></i>
 {#            <h3>{% title %}</h3>#}
 {#            <p>{% description %}</p>#}
 
             <p> Purchase</p>
-        </div>
+        </div>{% endcomment %}
+    {% endfor %}
 
 
 </body>

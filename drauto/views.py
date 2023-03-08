@@ -69,8 +69,14 @@ def register_form(requests):
 
 
 def vehicle(requests):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
+        vehicle_list = cursor.fetchall()
+        context = {
+            'vehicle_list': vehicle_list,
+        }
 
-    return render(requests, 'drauto/vehicle.html')
+    return render(requests, 'drauto/vehicle.html',context)
 
 
 def contact(requests):

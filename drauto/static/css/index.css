@@ -42,7 +42,7 @@ header{
 
 /* change color of logo icon here*/
 .logo i{
-    color: vat(--main-color);
+    color: var(--main-color);
     font-size: 28px;
     margin-right: 3px;
 }
@@ -197,15 +197,15 @@ h2{
     color: #6c757d;
     text-align: center;
 }
-
+/*
 .card:hover i, .card:hover p{
     color:#FFFFFF;
 }
 .card:hover h3{
     font-weight: 600;
-}
+}*/
 
-.card:nth-child(1):hover{
+/*.card:nth-child(1):hover{
     background:linear-gradient(45deg, 
                                 rgba(255,28,8,0.7) 0%,
                                 rgba(255,28,8,0.7) 100%),
@@ -227,7 +227,7 @@ h2{
                                 rgba(255,28,8,0.7) 100%),
                                 url('assets/png-car-single-removebg-preview.png');
     background-size: cover;
-}
+}*/
 
 @media (max-width: 1280px){
     header{
