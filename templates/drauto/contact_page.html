@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
+{% include 'drauto/main.html' %}
 <head>
     <meta charset="UTF-8">
     <title>Contact Us</title>
+     <link rel="stylesheet" href={% static 'css/contact_page.css' %}>
 </head>
 <body>
 
  {%  include 'drauto/navbar.html' %}
- {% static 'css/contact_page.css' %}
+
 
 <section class="contact-sec sec-pad">
   <div class="container">

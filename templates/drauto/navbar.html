@@ -1,11 +1,19 @@
+{% load static %}
 
+{% include 'drauto/main.html' %}
+<head>
+    <link rel="stylesheet" type="text/css" href={% static 'css/index.css' %}>
+</head>
     <header>
+
+
+
             <a href="#" class="logo"><i class="ri-car-fill"></i><span>Logo</span></a>
 
             <ul class="navbar">
                 <li><a href={% url 'index' %} class="active">HOME</a></li>
                 <li><a href="#">SERVICES</a></li>
-                <li><a href="#">VEHICLES</a></li>
+                <li><a href="{% url 'vehicle' %}">VEHICLES</a></li>
                 <li><a href="{% url 'contact' %}">CONTACT US</a></li>
             </ul>
 

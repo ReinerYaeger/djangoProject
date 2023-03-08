@@ -5,12 +5,13 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomerUserCreationForm
-
+from django.db import connection
 
 from .models import Employee
 
-
 # Create your views here.
+cursor = connection.cursor()
+
 
 def index(requests):
     return render(requests, 'drauto/index.html')
@@ -23,7 +24,6 @@ def login_form(requests):
 
     if requests.user.is_authenticated:
         return redirect('/')
-
 
     if requests.method == 'POST':
         username = requests.POST['username']
@@ -50,7 +50,7 @@ def logout_user(requests):
 def register_form(requests):
     page = 'register'
     form = CustomerUserCreationForm()
-    context = {'page':page , 'form':form}
+    context = {'page': page, 'form': form}
 
     if requests.method == 'POST':
         form = CustomerUserCreationForm(requests.POST)
@@ -65,9 +65,19 @@ def register_form(requests):
         else:
             messages.error(requests, "An error has occurred during registration")
 
-    return render(requests, 'drauto/login_register_form.html',context)
+    return render(requests, 'drauto/login_register_form.html', context)
+
+
+def vehicle(requests):
+
+    return render(requests, 'drauto/vehicle.html')
 
 
 def contact(requests):
+    return render(requests, 'drauto/contact_page.html')
 
-    return  render(requests,'drauto/contact_page.html')
+
+def stored_proc(requests, proc_string):
+    cursor.execute('')
+    result = cursor.fetchall()
+    return render(requests, '', {'result': result})
