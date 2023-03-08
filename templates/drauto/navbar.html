@@ -11,8 +11,9 @@
 
             <div class="main">
 
-                {%  if request.user.is.authenticated %}
-                    <a href="{% url 'login_form' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
+                {%  if request.user.is_authenticated %}
+                    <p> Hi {{ user.username }}</p>
+                    <a href="{% url 'logout' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
                 {% else  %}
                 <a href="{% url 'login_form' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
                 <li><a href="#" >Register</a></li>

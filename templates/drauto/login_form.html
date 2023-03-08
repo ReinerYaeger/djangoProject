@@ -8,13 +8,11 @@
 <body>
 {% include 'drauto/navbar.html' %}
 
-    <form method="post" action={% url 'login_form' %} >
-{#        {% csrf_token %}#}
-
+    <form method="post" %} >
+        {% csrf_token %}
 
         <input type="text" name="username" placeholder="Username"/>
         <input type="password" name="password" placeholder="Password"/>
-{#        {{ form }}#}
         <input type="submit" value="login">
     </form>
 
