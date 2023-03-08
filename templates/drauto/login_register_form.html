@@ -8,6 +8,16 @@
 <body>
 {% include 'drauto/navbar.html' %}
 
+ {% if page  == 'register' %}
+
+     <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+
+         {{ form.as_p }}
+     <input type="submit" name="registerUser">
+     </form>
+
+{% else %}
     <form method="post" %} >
         {% csrf_token %}
 
@@ -15,6 +25,7 @@
         <input type="password" name="password" placeholder="Password"/>
         <input type="submit" value="login">
     </form>
+{% endif %}
 
 </body>
 </html>

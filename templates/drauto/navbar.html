@@ -15,8 +15,8 @@
                     <p> Hi {{ user.username }}</p>
                     <a href="{% url 'logout' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
                 {% else  %}
-                <a href="{% url 'login_form' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
-                <li><a href="#" >Register</a></li>
+                <a href="{% url 'loginform' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
+                <li><a href="{% url 'register' %}" >Register</a></li>
                 <div class="bx bx-menu" id="menu-icon"></div>
                 {% endif %}
             </div>

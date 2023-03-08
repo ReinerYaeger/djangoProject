@@ -3,6 +3,9 @@ from .forms import LoginForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomerUserCreationForm
+
 
 from .models import Employee
 
@@ -16,9 +19,10 @@ def index(requests):
 def login_form(requests):
     # form = LoginForm()
     # context = {'form':form}
+    page = 'login'
 
     if requests.user.is_authenticated:
-        return index(requests)
+        return redirect('/')
 
 
     if requests.method == 'POST':
@@ -34,10 +38,26 @@ def login_form(requests):
             print('Incorrect Credentials')
             messages.error(requests, 'Incorrect Credentials')
 
-    return render(requests, 'drauto/login_form.html')
+    return render(requests, 'drauto/login_register_form.html')
 
 
 def logout_user(requests):
     logout(requests)
 
-    return redirect('login_form')
+    return redirect('/')
+
+
+def register_form(requests):
+    page = 'register'
+    form = CustomerUserCreationForm(requests.POST)
+    context = {'page':page , 'form':form}
+
+    if form.is_valid():
+        user = form.save(commit=False)
+        user.username = user.username.lower()
+        user.save()
+
+        messages.success(requests,"User created")
+
+
+    return render(requests,'drauto/login_register_form.html',context)
