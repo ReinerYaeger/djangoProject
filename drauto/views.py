@@ -65,5 +65,9 @@ def register_form(requests):
         else:
             messages.error(requests, "An error has occurred during registration")
 
-
     return render(requests, 'drauto/login_register_form.html',context)
+
+
+def contact(requests):
+
+    return  render(requests,'drauto/contact_page.html')

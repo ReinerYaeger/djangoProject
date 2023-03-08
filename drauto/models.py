@@ -80,8 +80,6 @@ class Client(models.Model):
     USERNAME_FIELD = 'email'
 
 
-
-
 class Phone_Number(models.Model):
     phone_number = models.CharField(max_length=15)
     client_Id = models.OneToOneField(Client, on_delete=models.CASCADE, primary_key=True)
