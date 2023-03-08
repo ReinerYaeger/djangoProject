@@ -5,6 +5,9 @@ body {
     background: var(--main-color);
     color: var(--text-color);
 }
+h1 {
+    text-align: center;
+}
 
 .login-box {
     margin-top: 75px;
