@@ -76,7 +76,22 @@ def vehicle(requests):
             'vehicle_list': vehicle_list,
         }
 
-    return render(requests, 'drauto/vehicle.html',context)
+    return render(requests, 'drauto/vehicle.html', context)
+
+
+def purchase(requests, vehicle_id):
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
+        vehicle_list = cursor.fetchall()
+        context = {
+            'vehicle_list': vehicle_list,
+        }
+
+    if vehicle_id not in vehicle_list:
+        return render(requests, 'drauto/vehicle.html', context)
+
+    return render(requests, 'drauto/purchase.html')
 
 
 def contact(requests):
