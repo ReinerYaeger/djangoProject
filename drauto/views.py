@@ -49,15 +49,21 @@ def logout_user(requests):
 
 def register_form(requests):
     page = 'register'
-    form = CustomerUserCreationForm(requests.POST)
+    form = CustomerUserCreationForm()
     context = {'page':page , 'form':form}
 
-    if form.is_valid():
-        user = form.save(commit=False)
-        user.username = user.username.lower()
-        user.save()
+    if requests.method == 'POST':
+        form = CustomerUserCreationForm(requests.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.set_password(requests.POST['password'])
+            user.save()
 
-        messages.success(requests,"User created")
+            messages.success(requests, "User created")
+            login(requests, user)
+        else:
+            messages.error(requests, "An error has occurred during registration")
 
 
-    return render(requests,'drauto/login_register_form.html',context)
+    return render(requests, 'drauto/login_register_form.html',context)

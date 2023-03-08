@@ -12,4 +12,10 @@ class LoginForm(ModelForm):
 class CustomerUserCreationForm(UserCreationForm):
     class Meta:
         model = Client
-        fields = ['client_name']
+        fields = ['client_name','email','password1','password2']
+        labels={
+            'client_name': 'Name',
+            'email': 'Email Address',
+            'password1': 'Password',
+            'password2': 'Confirm Password'
+        }

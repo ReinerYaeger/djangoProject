@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, AbstractUser
+
 
 # Create your models here.
 
@@ -72,8 +73,13 @@ class Van(models.Model):
 class Client(models.Model):
     client_Id = models.CharField(max_length=10, primary_key=True)
     client_name = models.CharField(max_length=25)
+    password = models.CharField(max_length=256)
     email = models.CharField(max_length=35)
     residential_address = models.CharField(max_length=50)
+
+    USERNAME_FIELD = 'email'
+
+
 
 
 class Phone_Number(models.Model):
