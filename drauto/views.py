@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from .forms import LoginForm
 from django.contrib.auth import login, authenticate, logout
@@ -50,20 +51,22 @@ def logout_user(requests):
 def register_form(requests):
     page = 'register'
     form = CustomerUserCreationForm()
-    context = {'page': page, 'form': form}
+    user = None
 
     if requests.method == 'POST':
         form = CustomerUserCreationForm(requests.POST)
         if form.is_valid():
             user = form.save(commit=False)
-            user.username = user.username.lower()
-            user.set_password(requests.POST['password'])
+            user.user = form.cleaned_data['email']
+            user.set_password(form.cleaned_data['password1'])
             user.save()
 
             messages.success(requests, "User created")
             login(requests, user)
         else:
             messages.error(requests, "An error has occurred during registration")
+
+    context = {'page': page, 'form': form}
 
     return render(requests, 'drauto/login_register_form.html', context)
 
