@@ -84,14 +84,29 @@ def purchase(requests, vehicle_id):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
         vehicle_list = cursor.fetchall()
-        context = {
-            'vehicle_list': vehicle_list,
-        }
 
-    if vehicle_id not in vehicle_list:
-        return render(requests, 'drauto/vehicle.html', context)
+        for v in vehicle_list:
+            if v[0] == vehicle_id:
+                # Store the values for the corresponding column names
+                vehicle = {
+                    'purchase_id': v[0],
+                    'client_Id': v[1],
+                    'chassis_number': v[2],
+                    'emp_Id': v[3],
+                    'price': v[4],
+                    'commission': v[5],
+                    'date_sold': v[6],
+                    'amt_paid': v[7],
+                    'payment_method': v[8]
+                }
+                print(vehicle)
+                break  # Exit the loop once the vehicle is found
 
-    return render(requests, 'drauto/purchase.html')
+        # If the vehicle is not found, set the purchase_id to 'Not Present'
+        if not vehicle:
+            vehicle = {'purchase_id': 'Not Present'}
+
+    return render(requests, 'drauto/purchase.html',vehicle)
 
 
 def contact(requests):
