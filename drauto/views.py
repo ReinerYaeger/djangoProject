@@ -81,6 +81,9 @@ def vehicle(requests):
 
 def purchase(requests, vehicle_id):
 
+    if not vehicle_id:
+        return render(requests, 'drauto/vehicle.html')
+
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
         vehicle_list = cursor.fetchall()
@@ -89,15 +92,19 @@ def purchase(requests, vehicle_id):
             if v[0] == vehicle_id:
                 # Store the values for the corresponding column names
                 vehicle = {
-                    'purchase_id': v[0],
-                    'client_Id': v[1],
-                    'chassis_number': v[2],
-                    'emp_Id': v[3],
-                    'price': v[4],
-                    'commission': v[5],
-                    'date_sold': v[6],
-                    'amt_paid': v[7],
-                    'payment_method': v[8]
+                    'chassis_number': v[0],
+                    'make': v[1],
+                    'import_price_usd': v[2],
+                    'car_year': v[3],
+                    'markup_percent': v[4],
+                    'colour': v[5],
+                    'engine_number': v[6],
+                    'model': v[7],
+                    'car_type': v[8],
+                    'condition': v[9],
+                    'mileage': v[10],
+                    'cc_rating': v[11],
+                    'price': getVehiclePrice(v[0]),
                 }
                 print(vehicle)
                 break  # Exit the loop once the vehicle is found
@@ -106,7 +113,17 @@ def purchase(requests, vehicle_id):
         if not vehicle:
             vehicle = {'purchase_id': 'Not Present'}
 
-    return render(requests, 'drauto/purchase.html',vehicle)
+    return render(requests, 'drauto/purchase.html', vehicle)
+
+
+
+def getVehiclePrice(chassis_number):
+    arg1 = chassis_number
+    cursor = connection.cursor()
+    cursor.execute("Select dbo.GET_DISCOUNT(?)", arg1)
+
+    record = cursor.fetchall()
+    print(record)
 
 
 def contact(requests):
@@ -114,6 +131,6 @@ def contact(requests):
 
 
 def stored_proc(requests, proc_string):
-    cursor.execute('')
+    cursor.execute('GET_VEHICLE_SELL_PRICE()')
     result = cursor.fetchall()
     return render(requests, '', {'result': result})
