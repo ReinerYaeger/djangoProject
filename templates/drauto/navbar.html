@@ -22,6 +22,7 @@
                 {%  if request.user.is_authenticated %}
                     <p> Hi {{ user.username }}</p>
                     <a href="{% url 'logout' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
+                    <div class="bx bx-menu" id="menu-icon"></div>
                 {% else  %}
                 <a href="{% url 'loginform' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
                 <li><a href="{% url 'register' %}" >Register</a></li>

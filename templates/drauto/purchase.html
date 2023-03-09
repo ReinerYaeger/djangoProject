@@ -1,23 +1,31 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
-    {% include 'drauto/main.html' %}
 <head>
     <meta charset="UTF-8">
     <title>Purchase</title>
 </head>
 <body>
-    {% include 'drauto/navbar.html' %}
+{% include 'drauto/navbar.html' %}
 
-    <div class="card">
-        dfg
-        <form>
-            <h3>{{ vehicle.chassis_number }}</h3>
-        </form>
-
-    </div>
-
+<div class="card">
+    {{ vehicle.1 }}
+    {{ vehicle.price }}
+    {{ user.username }}
+    <p>And Just for your Here is a discount <span style="color: red">{{ vehicle.pricediscount_price }} </span></p>
+    <form>
 
 
+        <input type="radio" id="credit-card" name="paymentMethod" value="credit-card">
+        <label for="credit-card">Credit Card</label>
+        <input type="radio" id="crypto" name="paymentMethod" value="crypto-currency">
+        <label for="crypto">Crypto Currency</label>
+        <input type="radio" id="Cash" name="paymentMethod" value="cash">
+        <label for="Cash">Cash</label>
+
+    </form>
+
+</div>
 
 
 </body>

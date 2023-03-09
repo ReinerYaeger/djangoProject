@@ -80,9 +80,8 @@ def vehicle(requests):
 
 
 def purchase(requests, vehicle_id):
-
-    if not vehicle_id:
-        return render(requests, 'drauto/vehicle.html')
+    if not requests.user.is_authenticated:
+        return redirect('/')
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
@@ -104,7 +103,8 @@ def purchase(requests, vehicle_id):
                     'condition': v[9],
                     'mileage': v[10],
                     'cc_rating': v[11],
-                    'price': getVehiclePrice(v[0]),
+                    'price': getPrice(v[0]),
+                    'discount_price': getDiscountPrice(v[0]),
                 }
                 print(vehicle)
                 break  # Exit the loop once the vehicle is found
@@ -116,14 +116,19 @@ def purchase(requests, vehicle_id):
     return render(requests, 'drauto/purchase.html', vehicle)
 
 
+def getPrice(chassis_number):
+    #cursor.execute("SELECT DrautoshopAddb.dbo.GET_VEHICLES_SELL_PRICE() WHERE chassis_number = '{chassis_number}'")
+    cursor.execute(f"SELECT Selling_Price FROM DrautoshopAddb.dbo.GET_VEHICLE_SELL_PRICE() WHERE chassis_number = '{chassis_number}'")
+    data = cursor.fetchall()
 
-def getVehiclePrice(chassis_number):
-    arg1 = chassis_number
-    cursor = connection.cursor()
-    cursor.execute("Select dbo.GET_DISCOUNT(?)", arg1)
+    return data[0][0]
 
-    record = cursor.fetchall()
-    print(record)
+def getDiscountPrice(chassis_number):
+
+    cursor.execute("SELECT DrautoshopAddb.dbo.GET_DISCOUNT('{chassis_number}')")
+    data = cursor.fetchall()
+
+    return data[0][0]
 
 
 def contact(requests):
