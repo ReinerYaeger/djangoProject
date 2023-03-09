@@ -126,7 +126,7 @@ class Client(AbstractBaseUser):
     objects = ClientManager()
 
     class Meta:
-        db_table = "Client"
+        db_table = "client"
 
 
 class PhoneNumber(models.Model):

@@ -58,7 +58,7 @@ def register_form(requests):
         if form.is_valid():
             user = form.save(commit=False)
             user.user = form.cleaned_data['email']
-            user.set_password(form.cleaned_data['password1'])
+            user.password = make_password(requests.POST['password'])
             user.save()
 
             messages.success(requests, "User created")
@@ -73,7 +73,7 @@ def register_form(requests):
 
 def vehicle(requests):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
+        cursor.execute("SELECT * FROM DrautoshopAddb.dbo.Vehicle")
         vehicle_list = cursor.fetchall()
         context = {
             'vehicle_list': vehicle_list,
@@ -87,7 +87,7 @@ def purchase(requests, vehicle_id):
         return redirect('/')
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM DrautoshopAddb.dbo.DrAuto_vehicle")
+        cursor.execute("SELECT * FROM DrautoshopAddb.dbo.Vehicle")
         vehicle_list = cursor.fetchall()
 
         for v in vehicle_list:

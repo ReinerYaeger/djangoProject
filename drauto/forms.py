@@ -14,17 +14,11 @@ class LoginForm(ModelForm):
 
 class CustomerUserCreationForm(UserCreationForm):
     class Meta:
-        db_table = 'client'
+        db_table = 'auth_user'
         model = Client
-        fields = ['client_name', 'email', 'password1']
+        fields = ['client_name', 'email', 'password']
         labels = {
             'client_name': 'Name',
             'email': 'Email Address',
-            'password1': 'Password',
+            'password': 'Password',
         }
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if Client.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email address is already in use.")
-        return email

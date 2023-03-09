@@ -4,29 +4,27 @@
 <head>
     <link rel="stylesheet" type="text/css" href={% static 'css/index.css' %}>
 </head>
-    <header>
+<header>
 
+    <a href="{% url 'index' %}" class="logo"><i class="ri-car-fill"></i><span></span></a>
 
+    <ul class="navbar">
+        <li><a href={% url 'index' %} class="active">HOME</a></li>
+        <li><a href="#">SERVICES</a></li>
+        <li><a href="{% url 'vehicle' %}">VEHICLES</a></li>
+        <li><a href="{% url 'contact' %}">CONTACT US</a></li>
+    </ul>
 
-            <a href="{% url 'index' %}" class="logo"><i class="ri-car-fill"></i><span></span></a>
+    <div class="main">
 
-            <ul class="navbar">
-                <li><a href={% url 'index' %} class="active">HOME</a></li>
-                <li><a href="#">SERVICES</a></li>
-                <li><a href="{% url 'vehicle' %}">VEHICLES</a></li>
-                <li><a href="{% url 'contact' %}">CONTACT US</a></li>
-            </ul>
-
-            <div class="main">
-
-                {%  if request.user.is_authenticated %}
-                    <p> Hi {{ user.username }}</p>
-                    <a href="{% url 'logout' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
-                    <div class="bx bx-menu" id="menu-icon"></div>
-                {% else  %}
-                <a href="{% url 'loginform' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
-                <li><a href="{% url 'register' %}" >Register</a></li>
-                <div class="bx bx-menu" id="menu-icon"></div>
-                {% endif %}
-            </div>
-    </header>
+        {% if request.user.is_authenticated %}
+            <p> Hi {{ user.username }}</p>
+            <a href="{% url 'logout' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
+            <div class="bx bx-menu" id="menu-icon"></div>
+        {% else %}
+            <a href="{% url 'loginform' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
+            <li><a href="{% url 'register' %}">Register</a></li>
+            <div class="bx bx-menu" id="menu-icon"></div>
+        {% endif %}
+    </div>
+</header>
