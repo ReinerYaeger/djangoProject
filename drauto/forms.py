@@ -16,9 +16,8 @@ class CustomerUserCreationForm(UserCreationForm):
     class Meta:
         db_table = 'auth_user'
         model = Client
-        fields = ['client_name', 'email', 'password']
+        fields = ['client_name', 'email']
         labels = {
             'client_name': 'Name',
-            'email': 'Email Address',
-            'password': 'Password',
+            'email': 'Email Address'
         }

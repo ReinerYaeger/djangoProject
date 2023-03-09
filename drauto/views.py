@@ -56,12 +56,12 @@ def register_form(requests):
     if requests.method == 'POST':
         form = CustomerUserCreationForm(requests.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.user = form.cleaned_data['email']
-            user.password = make_password(requests.POST['password'])
-            user.save()
-
-            messages.success(requests, "User created")
+            client = form.save(commit=False)
+            password = form.cleaned_data.get('password')
+            client.set_password(password)  # set the password here
+            client.save()
+            # login the user
+            user = authenticate(email=client.email, password=password)
             login(requests, user)
         else:
             messages.error(requests, "An error has occurred during registration")
