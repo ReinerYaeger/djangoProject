@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import Permission, AbstractUser
 
 
-class Employee(models.Model):
+class Employee(AbstractBaseUser):
     emp_Id = models.CharField(max_length=10, primary_key=True)
     emp_name = models.CharField(max_length=25)
     date_employed = models.DateField()
@@ -108,11 +108,6 @@ class ClientManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
 
 
 class Client(AbstractBaseUser):

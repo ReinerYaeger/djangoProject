@@ -22,7 +22,9 @@
             <a href="{% url 'logout' %}" class="user"><i class="ri-user-fill"></i>Logout</a>
             <div class="bx bx-menu" id="menu-icon"></div>
         {% else %}
-            <a href="{% url 'loginform' %}" class="user"><i class="ri-user-fill"></i>Log in</a>
+            <a href="{% url 'client_login' %}" class="user"><i class="ri-user-fill"></i>Client Log in</a>
+
+            <a href="{% url 'staff_login' %}" class="user"><i class="ri-user-fill"></i>Staff Log in</a>
             <li><a href="{% url 'register' %}">Register</a></li>
             <div class="bx bx-menu" id="menu-icon"></div>
         {% endif %}

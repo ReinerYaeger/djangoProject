@@ -5,10 +5,11 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from .forms import CustomerUserCreationForm
 from django.db import connection
 
-from .models import Employee
+from .models import Employee, ClientPurchase
 
 # Create your views here.
 cursor = connection.cursor()
@@ -18,7 +19,7 @@ def index(requests):
     return render(requests, 'drauto/index.html')
 
 
-def login_form(requests):
+def client_login(requests):
     # form = LoginForm()
     # context = {'form':form}
     page = 'login'
@@ -42,6 +43,30 @@ def login_form(requests):
     return render(requests, 'drauto/login_register_form.html')
 
 
+def staff_login(requests):
+    page = 'login'
+
+    if requests.user.is_authenticated:
+        return redirect('/')
+
+    if requests.method == 'POST':
+        username = requests.POST['username']
+        password = requests.POST['password']
+
+       # employee = Employee.objects.get(emp_Id=emp_id)
+
+        user = requests.user
+
+        if user is not None:
+            login(requests, user)
+            return index(requests)
+        else:
+            print('Incorrect Credentials')
+            messages.error(requests, 'Incorrect Credentials')
+
+    return render(requests, 'drauto/login_register_form.html')
+
+
 def logout_user(requests):
     logout(requests)
 
@@ -50,24 +75,25 @@ def logout_user(requests):
 
 def register_form(requests):
     page = 'register'
-    form = CustomerUserCreationForm()
-    user = None
+    form = CustomerUserCreationForm(requests.POST or None)
 
-    if requests.method == 'POST':
-        form = CustomerUserCreationForm(requests.POST)
-        if form.is_valid():
-            client = form.save(commit=False)
-            password = form.cleaned_data.get('password')
-            client.set_password(password)  # set the password here
-            client.save()
+    if requests.method == 'POST' and form.is_valid():
+        client = form.save(commit=False)
+        password = form.cleaned_data.get('password')
+        client.set_password(password)
+        client.save()
+
+        # authenticate the user
+        user = authenticate(email=client.email, password=password)
+        if user is not None:
             # login the user
-            user = authenticate(email=client.email, password=password)
             login(requests, user)
+            messages.success(requests, 'Your account has been created!')
+            return redirect('home')
         else:
-            messages.error(requests, "An error has occurred during registration")
+            messages.error(requests, "Unable to authenticate user")
 
     context = {'page': page, 'form': form}
-
     return render(requests, 'drauto/login_register_form.html', context)
 
 
@@ -116,18 +142,45 @@ def purchase(requests, vehicle_id):
         if not vehicle:
             vehicle = {'purchase_id': 'Not Present'}
 
-    return render(requests, 'drauto/purchase.html', vehicle)
+    if requests.method == 'POST':
+        form = ClientPurchase(requests.POST)
+        if form.is_valid():
+
+            purchase.amt_paid = form.cleaned_data['amt_paid']
+            purchase.payment_method = form.cleaned_data['payment_method']
+
+            # Save the purchase to the database
+            purchase.save()
+
+            return redirect('/')
+
+        # If the form is not valid, render the purchase template with the form and vehicle information
+    else:
+        form = ClientPurchase()
+
+    context = {'vehicle': vehicle}
+    return render(requests, 'drauto/purchase.html', context)
+
+
+def log_payment(requests):
+    with connection.cursor() as cursor:
+        cursor.execute("INSERT INTO DrautoshopAddb.dbo.Client_Purchase ()")
+        vehicle_list = cursor.fetchall()
+        context = {
+            'vehicle_list': vehicle_list,
+        }
 
 
 def getPrice(chassis_number):
-    #cursor.execute("SELECT DrautoshopAddb.dbo.GET_VEHICLES_SELL_PRICE() WHERE chassis_number = '{chassis_number}'")
-    cursor.execute(f"SELECT Selling_Price FROM DrautoshopAddb.dbo.GET_VEHICLE_SELL_PRICE() WHERE chassis_number = '{chassis_number}'")
+    # cursor.execute("SELECT DrautoshopAddb.dbo.GET_VEHICLES_SELL_PRICE() WHERE chassis_number = '{chassis_number}'")
+    cursor.execute(
+        f"SELECT Selling_Price FROM DrautoshopAddb.dbo.GET_VEHICLE_SELL_PRICE() WHERE chassis_number = '{chassis_number}'")
     data = cursor.fetchall()
 
     return data[0][0]
 
-def getDiscountPrice(chassis_number):
 
+def getDiscountPrice(chassis_number):
     cursor.execute("SELECT DrautoshopAddb.dbo.GET_DISCOUNT('{chassis_number}')")
     data = cursor.fetchall()
 

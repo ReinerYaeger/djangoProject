@@ -9,25 +9,28 @@
 {% include 'drauto/navbar.html' %}
 
 <div class="card">
-    {{ vehicle.1 }}
-    {{ vehicle.price }}
+
+    <h2>{{ vehicle.make }} {{ vehicle.model }}</h2>
+    <p>Price: {{ vehicle.price }}</p>
     {{ user.username }}
-    <p>And Just for your Here is a discount <span style="color: red">{{ vehicle.pricediscount_price }} </span></p>
-    <form>
+    <p>And Just for your Here is a discount {{ vehicle.pricediscount_price }}</p>
+
+    <form method="post" action="">
+        {% csrf_token %}
 
         {{ vehicle.1 }}
         {{ vehicle.price }}
-        <input type="radio" id="credit-card" name="paymentMethod" value="credit-card">
+        {{ form.as_p }}
+        {% comment %}<input type="radio" id="credit-card" name="paymentMethod" value="credit-card">
         <label for="credit-card">Credit Card</label>
         <input type="radio" id="crypto" name="paymentMethod" value="crypto-currency">
         <label for="crypto">Crypto Currency</label>
         <input type="radio" id="Cash" name="paymentMethod" value="cash">
-        <label for="Cash">Cash</label>
-
+        <label for="Cash">Cash</label>{% endcomment %}
+        <br>
         <label for="amountPaid">
             <input type="number" id="amountPaid" step="0.01" placeholder="Amount Paying">
         </label>
-
         <br>
         <input type="submit" name="purchaseSubmit">
     </form>
