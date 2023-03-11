@@ -181,14 +181,15 @@ class Van(models.Model):
 
 
 class ClientManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
+    def create_user(self, client_name, password_hash):
+        user = self.model(
+            client_name=client_name,
+            password_hash=password_hash,
+        )
+
+        user.set_password(password_hash)
+        user.is_staff = False
         user.save(using=self._db)
-        return user
 
 
 class Client(AbstractBaseUser):
@@ -196,8 +197,9 @@ class Client(AbstractBaseUser):
     client_name = models.CharField(max_length=25)
     email = models.EmailField(max_length=35)
     residential_address = models.CharField(max_length=50)
+    password_hash = models.CharField(max_length=256)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'client_name'
 
     objects = ClientManager()
 

@@ -1,3 +1,6 @@
+import random
+import string
+
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from .forms import LoginForm
@@ -17,26 +20,31 @@ def index(requests):
 
 
 def client_login(requests):
-    # form = LoginForm()
-    # context = {'form':form}
     page = 'login'
 
     if requests.user.is_authenticated:
         return redirect('/')
 
     if requests.method == 'POST':
-        emp_name = requests.POST['username']
+        username = requests.POST['username']
         password = requests.POST['password']
+        user = 'C'
 
-        user = authenticate(requests, username=emp_name, password=password)
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', '{user}')")
+            result = cursor.fetchone()[0]
 
-        if user is not None:
+        if result == 1:
+            user = authenticate(requests, username=username, password=password)
+            # if user is not None:
             login(requests, user)
-            return index(requests)
-        else:
-            print('Incorrect Credentials')
-            messages.error(requests, 'Incorrect Credentials')
-
+            return redirect('/')
+            # else:
+            messages.error(requests, '1Error logging in, please try again')
+            print(requests, '1Error logging in, please try again')
+    else:
+        messages.error(requests, '2Incorrect credentials, please try again')
+        print(requests, '2Error logging in, please try again')
     return render(requests, 'drauto/login_register_form.html')
 
 
@@ -96,24 +104,48 @@ def register_form(requests):
     page = 'register'
     form = CustomerUserCreationForm(requests.POST or None)
 
-    if requests.method == 'POST' and form.is_valid():
-        client = form.save(commit=False)
-        password = form.cleaned_data.get('password')
+    if requests.user.is_authenticated:
+        return redirect('/')
+
+    if requests.method == 'POST':
+        username = requests.POST.get('username')
+        password = requests.POST.get('password')
+        email = requests.POST.get('email')
+        residential_address = requests.POST.get('residential_address')
+        clnt_id = generate_cl_string()
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Client (client_Id, client_name, email, residential_address, password_hash) VALUES (%s, %s, %s, %s, %s)",
+                [clnt_id, username, email, residential_address, password])
+            connection.commit()
+            # result = cursor.fetchone()[0]
+
+        client = Client(client_Id=clnt_id, client_name=username, email=email, residential_address=residential_address,
+                        password_hash=password)
+
         client.set_password(password)
+
         client.save()
 
         # authenticate the user
-        user = authenticate(email=client.email, password=password)
-        if user is not None:
+        client = authenticate(requests, username=username, password=client.password_hash)
+        if client is not None:
             # login the user
-            login(requests, user)
+            login(requests, client)
             messages.success(requests, 'Your account has been created!')
             return redirect('home')
         else:
             messages.error(requests, "Unable to authenticate user")
+            print("Unable to authenticate user")
 
     context = {'page': page, 'form': form}
     return render(requests, 'drauto/login_register_form.html', context)
+
+
+def generate_cl_string():
+    random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    return 'CL' + random_chars
 
 
 def vehicle(requests):
