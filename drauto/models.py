@@ -1,6 +1,81 @@
+from datetime import timezone
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.hashers import make_password
 from django.db import models
-from django.contrib.auth.models import Permission, AbstractUser
+from django.contrib.auth.models import Permission, AbstractUser, Group
+from django.contrib.auth.models import PermissionsMixin
+
+
+class EmployeeManager(BaseUserManager):
+    def create_user(self, emp_name, password):
+        user = self.model(
+            emp_name=emp_name,
+            password=password,
+            date_employed=timezone.now().date(),
+        )
+
+        user.set_password(password)
+        user.is_staff = True
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, emp_name, password):
+        user = self.create_user(
+            emp_name=emp_name,
+            password=password,
+            date_employed=timezone.now().date(),
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
+
+
+class LoginManager(BaseUserManager):
+    def create_user(self, user_id, password):
+        user = self.model(
+            user_id=user_id,
+            password_hash=make_password(password)
+        )
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, user_id, password):
+        user = self.create_user(user_id=user_id, password=password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+
+class Login(AbstractBaseUser, PermissionsMixin):
+    user_id = models.CharField(max_length=50, unique=True)
+    password_hash = models.CharField(max_length=256)
+
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'user_id'
+    REQUIRED_FIELDS = []
+
+    objects = LoginManager()
+
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=('groups'),
+        blank=True,
+        related_name='logins'
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=('user permissions'),
+        blank=True,
+        related_name='logins'
+    )
+
+    class Meta:
+        verbose_name = ('login')
+        verbose_name_plural = ('logins')
 
 
 class Employee(AbstractBaseUser):
@@ -8,7 +83,9 @@ class Employee(AbstractBaseUser):
     emp_name = models.CharField(max_length=25)
     date_employed = models.DateField()
     dob = models.DateField()
-    age = models.IntegerField(null=True)
+    password_hash = models.CharField(max_length=256)
+
+    objects = EmployeeManager()
 
     class Meta:
         db_table = "Employee"

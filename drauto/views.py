@@ -2,10 +2,7 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from .forms import LoginForm
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
 from .forms import CustomerUserCreationForm
 from django.db import connection
 
@@ -28,10 +25,10 @@ def client_login(requests):
         return redirect('/')
 
     if requests.method == 'POST':
-        username = requests.POST['username']
+        emp_name = requests.POST['username']
         password = requests.POST['password']
 
-        user = authenticate(requests, username=username, password=password)
+        user = authenticate(requests, username=emp_name, password=password)
 
         if user is not None:
             login(requests, user)
@@ -52,19 +49,33 @@ def staff_login(requests):
     if requests.method == 'POST':
         username = requests.POST['username']
         password = requests.POST['password']
+        user = 'E'
 
-       # employee = Employee.objects.get(emp_Id=emp_id)
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', '{user}')")
+            result = cursor.fetchone()[0]
 
-        user = requests.user
-
-        if user is not None:
-            login(requests, user)
-            return index(requests)
+        if result == 1:
+            user = authenticate(requests, username=username, password=password)
+            if user is not None:
+                login(requests, user)
+                return redirect('/')
+            else:
+                messages.error(requests, 'Error logging in, please try again')
         else:
-            print('Incorrect Credentials')
-            messages.error(requests, 'Incorrect Credentials')
-
+            messages.error(requests, 'Incorrect credentials, please try again')
     return render(requests, 'drauto/login_register_form.html')
+    #     if result == 1:
+    #         user = Employee.objects.create_user(emp_name=username,password_hash=password)
+    #         user = authenticate(requests, username=username, password_hash=password)
+    #         user = requests.user
+    #         login(requests, user)
+    #         return index(requests)
+    #     else:
+    #         print('Incorrect Credentials')
+    #         messages.error(requests, 'Incorrect Credentials')
+    #
+    # return render(requests, 'drauto/login_register_form.html')
 
 
 def logout_user(requests):
