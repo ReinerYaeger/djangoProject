@@ -6,7 +6,7 @@ from django.contrib import messages
 from .forms import CustomerUserCreationForm
 from django.db import connection
 
-from .models import Employee, ClientPurchase
+from .models import Employee, ClientPurchase, Client
 
 # Create your views here.
 cursor = connection.cursor()
@@ -40,7 +40,7 @@ def client_login(requests):
     return render(requests, 'drauto/login_register_form.html')
 
 
-def staff_login(requests):
+def login(requests):
     page = 'login'
 
     if requests.user.is_authenticated:
@@ -49,21 +49,29 @@ def staff_login(requests):
     if requests.method == 'POST':
         username = requests.POST['username']
         password = requests.POST['password']
+        user_type = requests.POST.get('user_type')
         user = 'E'
 
-        with connection.cursor() as cursor:
-            cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', '{user}')")
-            result = cursor.fetchone()[0]
+        if user_type == 'staff':
+            with connection.cursor() as cursor:
+                cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', 'E')")
+                result = cursor.fetchone()[0]
+                if result == 1:
+                    user = Employee.objects.create_user(emp_name=username, password=password)
+        elif user_type == 'client':
+            with connection.cursor() as cursor:
+                cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', 'C')")
+                result = cursor.fetchone()[0]
+                if result == 1:
+                    user = Client.objects.create_user(emp_name=username, password=password)
+            #user = authenticate(requests, username=username, password=password)
 
-        if result == 1:
-            user = authenticate(requests, username=username, password=password)
-            if user is not None:
-                login(requests, user)
-                return redirect('/')
-            else:
-                messages.error(requests, 'Error logging in, please try again')
+        if user is not None:
+            login(requests, user)
+            return index(requests)
         else:
-            messages.error(requests, 'Incorrect credentials, please try again')
+            print('Incorrect Credentials')
+            messages.error(requests, 'Incorrect Credentials')
     return render(requests, 'drauto/login_register_form.html')
     #     if result == 1:
     #         user = Employee.objects.create_user(emp_name=username,password_hash=password)
@@ -156,7 +164,6 @@ def purchase(requests, vehicle_id):
     if requests.method == 'POST':
         form = ClientPurchase(requests.POST)
         if form.is_valid():
-
             purchase.amt_paid = form.cleaned_data['amt_paid']
             purchase.payment_method = form.cleaned_data['payment_method']
 
