@@ -1,10 +1,14 @@
+import random
+import string
+
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from .forms import LoginForm
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from .forms import CustomerUserCreationForm
 from django.db import connection
+from .authentication_backend import MyBackend
 
 from .models import Employee, ClientPurchase
 
@@ -16,28 +20,28 @@ def index(requests):
     return render(requests, 'drauto/index.html')
 
 
-def client_login(requests):
+def client_login(request):
     # form = LoginForm()
     # context = {'form':form}
     page = 'login'
 
-    if requests.user.is_authenticated:
+    if request.user.is_authenticated:
         return redirect('/')
 
-    if requests.method == 'POST':
-        emp_name = requests.POST['username']
-        password = requests.POST['password']
+    if request.method == 'POST':
+        client_name = request.POST['username']
+        password = request.POST['password']
 
-        user = authenticate(requests, username=emp_name, password=password)
+        user = MyBackend().authenticate(request, username=client_name, password=password, user_type='C')
 
         if user is not None:
-            login(requests, user)
-            return index(requests)
+            login(request, user)
+            return index(request)
         else:
             print('Incorrect Credentials')
-            messages.error(requests, 'Incorrect Credentials')
+            messages.error(request, 'Incorrect Credentials')
 
-    return render(requests, 'drauto/login_register_form.html')
+    return render(request, 'drauto/login_register_form.html')
 
 
 def staff_login(requests):
@@ -49,14 +53,14 @@ def staff_login(requests):
     if requests.method == 'POST':
         username = requests.POST['username']
         password = requests.POST['password']
-        user = 'E'
+        user_type = 'E'
 
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', '{user}')")
+            cursor.execute(f"SELECT dbo.ValidateLogin('{username}', '{password}', '{user_type}')")
             result = cursor.fetchone()[0]
 
         if result == 1:
-            user = authenticate(requests, username=username, password=password)
+            user = MyBackend.authenticate(requests, username=username, password=password, user_type=user_type)
             if user is not None:
                 login(requests, user)
                 return redirect('/')
@@ -88,17 +92,27 @@ def register_form(requests):
     page = 'register'
     form = CustomerUserCreationForm(requests.POST or None)
 
-    if requests.method == 'POST' and form.is_valid():
-        client = form.save(commit=False)
-        password = form.cleaned_data.get('password')
-        client.set_password(password)
-        client.save()
+    if requests.user.is_authenticated:
+        return redirect('/')
+
+    if requests.method == 'POST':
+        username = requests.POST.get('username')
+        password = requests.POST.get('password')
+        email = requests.POST.get('email')
+        residential_address = requests.POST.get('residential_address')
+        clnt_id = generate_cl_string()
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO Client (client_Id, client_name, email, residential_address, password_hash) VALUES (%s, %s, %s, %s, %s)",
+                [clnt_id, username, email, residential_address, password])
+            connection.commit()
 
         # authenticate the user
-        user = authenticate(email=client.email, password=password)
-        if user is not None:
+        client = MyBackend().authenticate(requests, email=email, password=password)
+        if client is not None:
             # login the user
-            login(requests, user)
+            login(requests, client)
             messages.success(requests, 'Your account has been created!')
             return redirect('home')
         else:
@@ -107,6 +121,10 @@ def register_form(requests):
     context = {'page': page, 'form': form}
     return render(requests, 'drauto/login_register_form.html', context)
 
+
+def generate_cl_string():
+    random_chars = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+    return 'CL' + random_chars
 
 def vehicle(requests):
     with connection.cursor() as cursor:
@@ -156,7 +174,6 @@ def purchase(requests, vehicle_id):
     if requests.method == 'POST':
         form = ClientPurchase(requests.POST)
         if form.is_valid():
-
             purchase.amt_paid = form.cleaned_data['amt_paid']
             purchase.payment_method = form.cleaned_data['payment_method']
 
